@@ -23,6 +23,8 @@ It will use the `global.log` if its there. So on `devicejs run` it will use the 
 
 #### Levels
 
+The same as in deviceJS.
+
     log
     error
     warn
