@@ -20,7 +20,7 @@ var LEVELS_default = {  // these are also defined in greaseLog/index.js
 var dbg_logger = function() {};
 
 var setup_fallback = function(opts,config,donecb) {
-    GLOBAL.log = {
+    var ret = {
         log : function() {
             if(arguments.length > 0) {
                 arguments[0] = "[LOG]     " + arguments[0];
@@ -36,6 +36,18 @@ var setup_fallback = function(opts,config,donecb) {
         error : function() {
             if(arguments.length > 0) {
                 arguments[0] = "[ERROR]   " + arguments[0];
+                console.log.apply(undefined,arguments);
+            }
+        },
+        user1 : function() {
+            if(arguments.length > 0) {
+                arguments[0] = "[USER1]   " + arguments[0];
+                console.log.apply(undefined,arguments);
+            }
+        },
+        user2 : function() {
+            if(arguments.length > 0) {
+                arguments[0] = "[USER2]   " + arguments[0];
                 console.log.apply(undefined,arguments);
             }
         },
@@ -74,12 +86,18 @@ var setup_fallback = function(opts,config,donecb) {
                 arguments[0] = "[SUCCESS] " + arguments[0];
                 console.log.apply(undefined,arguments);
             }
+        },
+        trace : function() {
+            if(arguments.length > 0) {
+                arguments[0] = "[TRACE]   " + arguments[0];
+                console.log.apply(undefined,arguments);
+            }
         }
     }
     if (typeof donecb == 'function') {
         donecb();
     }
-    return GLOBAL.log;
+    return ret;
 };
 
 var grease = null;
@@ -382,13 +400,14 @@ var setup = function(opts,    // standard options for grease
 };
 
 var isCloud = function() {
-    return !global.hasOwnProperty('dev$') && !global.hasOwnProperty('ddb');
+    return !global.hasOwnProperty('dev$');
 };
 
 
 if(!GLOBAL.log) {
     if(isCloud()) {
         module.exports = setup_fallback;
+        return;
     }
     try {
         grease = require('grease-log');
