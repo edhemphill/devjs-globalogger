@@ -5,7 +5,7 @@ This is a global logger shim. Use it instead on `console.X`
 
 ```javascript
 // Example use
-var log = require('devjs-globallogger');
+var log = require('devjs-globallogger')();  // <--- note - call the require()'s result as a function
 
 ...
 
