@@ -1,0 +1,15 @@
+{
+  "name": "devjs-globalogger",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Ed Hemphill <npm@wigwag.com> (http://www.wigwag.com/)",
+  "license": "MIT",
+  "engines" : { "node" : ">=0.12" },
+  "dependencies": {
+	"underscore" : "1.8.3"
+  }
+}
