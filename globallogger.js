@@ -405,25 +405,26 @@ var isCloud = function() {
 
 
 if(!GLOBAL.log) {
-    if(isCloud()) {
-        module.exports = setup_fallback;
-        return;
-    }
-    try {
-        grease = require('grease-log');
-        module.exports = function(opts,config,cb) {
-            if(!opts || typeof opts != 'object')
-                opts = {};
-            if(!opts.levels) {
-                opts.levels = LEVELS_default;
+    module.exports = function(opts,config,cb) {
+        if((opts && (opts.client_only || opts._force_grease)) || !isCloud()) {
+            try {
+                grease = require('grease-log');
+
+                if(!opts || typeof opts != 'object')
+                    opts = {};
+                if(!opts.levels) {
+                    opts.levels = LEVELS_default;
+                }
+                return setup(opts,config,cb);
+            } catch(e) {
+                console.error("** Can't load grease-log. Going to fallback. **");
+                console.error("   Failure @ " + util.inspect(e));
+                module.exports = setup_fallback;
             }
-            return setup(opts,config,cb);
-        };
-    } catch(e) {
-        console.error("** Can't load grease-log. Going to fallback. **");
-        console.error("   Failure @ " + util.inspect(e));
-        module.exports = setup_fallback;
-    }
+        } else {
+            return setup_fallback(opts,config,cb);
+        }
+    };
 } else {
     module.exports = function(opts,config,donecb) {
         if (typeof donecb == 'function') {
