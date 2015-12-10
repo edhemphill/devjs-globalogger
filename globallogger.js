@@ -17,6 +17,37 @@ var LEVELS_default = {  // these are also defined in greaseLog/index.js
     'trace'    : 0x800
 };
 
+var getStack = function(n) {
+    // EXPENSIVE !!!!!!!!!!!!
+    if(n===undefined) n=2;
+    var data = {};
+    // get call stack, and analyze it
+    // get all file,method and line number
+    data.stack = (new Error()).stack.split('\n').slice(n);
+
+    // Stack trace format :
+    // http://code.google.com/p/v8/wiki/JavaScriptStackTraceApi
+    var s = data.stack[0], sp = /at\s+(.*)\s+\((.*):(\d*):(\d*)\)/gi
+            .exec(s)
+        || /at\s+()(.*):(\d*):(\d*)/gi.exec(s);
+    if (sp && sp.length === 5) {
+        data.method = sp[1];
+        data.path = sp[2];
+        data.line = sp[3];
+        data.pos = sp[4];
+        var paths = data.path.split('/');
+        data.file = paths[paths.length - 1];
+        if(paths.length > 1)
+            data.subdir = paths[paths.length - 2] + '/';
+    }
+    return data;
+}
+
+var traceBack = function() {
+    var d = getStack(3);
+    return "["+d.subdir+d.file+":"+d.line+" in "+d.method+"()]";
+}
+
 var dbg_logger = function() {};
 
 var setup_fallback = function(opts,config,donecb) {
@@ -88,10 +119,12 @@ var setup_fallback = function(opts,config,donecb) {
             }
         },
         trace : function() {
-            if(arguments.length > 0) {
-                arguments[0] = "[TRACE]   " + arguments[0];
-                console.log.apply(undefined,arguments);
-            }
+            var d = getStack(3);
+            // var argz = Array.prototype.slice.call(arguments);
+            var argz = Array.apply(null, arguments);
+            argz.unshift("["+d.subdir+d.file+":"+d.line+" in "+d.method+"()] ");
+            argz.unshift(      "[TRACE]  ");
+            console.log.apply(undefined,argz);
         }
     }
     if (typeof donecb == 'function') {
@@ -433,3 +466,6 @@ if(!GLOBAL.log) {
         return GLOBAL.log;
     }
 }
+
+module.exports.getStack = getStack;
+module.exports.traceBack = traceBack;
