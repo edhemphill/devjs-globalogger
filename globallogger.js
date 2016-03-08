@@ -437,8 +437,8 @@ var isCloud = function() {
 };
 
 
-if(!GLOBAL.log) {
-    module.exports = function(opts,config,cb) {
+module.exports = function(opts,config,cb) {
+    if(!global.hasOwnProperty('log')) {
         if((opts && (opts.client_only || opts._force_grease)) || !isCloud()) {
             try {
                 grease = require('grease-log');
@@ -457,13 +457,11 @@ if(!GLOBAL.log) {
         } else {
             return setup_fallback(opts,config,cb);
         }
-    };
-} else {
-    module.exports = function(opts,config,donecb) {
+    } else {
         if (typeof donecb == 'function') {
             donecb();
         }
-        return GLOBAL.log;
+        return global.log;
     }
 }
 
