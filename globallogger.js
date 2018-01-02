@@ -441,7 +441,7 @@ module.exports = function(opts,config,cb) {
     if(!global.hasOwnProperty('log')) {
         if((opts && (opts.client_only || opts._force_grease)) || !isCloud()) {
             try {
-                grease = require('grease-log');
+                grease = require('grease-log-client');
 
                 if(!opts || typeof opts != 'object')
                     opts = {};
